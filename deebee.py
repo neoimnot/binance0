@@ -3,8 +3,8 @@ import sqlite3
 # Common DB function definitions
 def connectDB():
   '''
-  Create a in memory database to see how badly we understand this
-  reuturn the connection object
+  Create a database on the filesystem to see how badly we understand this.
+  Return the connection object.
   '''
  # myconn = ''
   try:
