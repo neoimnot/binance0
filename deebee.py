@@ -76,17 +76,7 @@ def createCoinTempTable(cur):
     except sqlite3.OperationalError as err:
         print(f'Coinhistory table creation failed! \n{err}')
 
-def countcoins():
-    '''
-    Quick count of total symbol names for PK use
-    '''
-    try:
-      cur = ''
-      mycount = 0 
-      mycount = cur.execute(""""SELECT COUNT(symbol) from coins""")
-    except Exception as err:
-      print(f'This is the except from the countcoins function\n{err}')
-      return mycount
+
 
 def showTables(cur):
     tables = ''

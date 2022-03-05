@@ -19,7 +19,8 @@ print(mytables.fetchall())
 thecoins = mycoins()
 # print(f'This is the variable thecoins\n{thecoins}') 
 
-def popultateCoinHistTable(mycoin):
+
+def popultate_CoinHistTable(mycoin):
    '''
    Fetch a tuple of binance ready timestamps 201 days apart.  Then
    call the API for the symbol passed in for that range.  Update
@@ -34,8 +35,8 @@ def popultateCoinHistTable(mycoin):
    coincount = 0 
 #   Set 201 days timeframe
    mytimeRange =  create200TStamps()
-#  How many coins?
-   coincount = countcoins()
+#  Retrieve total number of coins
+   coincount = count_coins()
 #   Fetch data by coin name.
    try:
      fetch = get_qstring('https://api.binance.us/api/v3/klines',
@@ -48,6 +49,7 @@ def popultateCoinHistTable(mycoin):
         if fetch:
           for sublist in fetch:
             for num in range(1, coincount):
+              print(num)
               cursor.execute("INSERT INTO coinhist VALUES (:closeid, :close, :volume, :coin)", 
                 {'closeid': num, 'close': f'{float(sublist[4]):.2f}',
                  'volume': f'{float(sublist[5]):.2f}','coin': str(mycoin)}
@@ -55,24 +57,12 @@ def popultateCoinHistTable(mycoin):
         else:
           print(f'This is the else from the cursor.execute')
      except  sqlite3.IntegrityError as sql3IE:
-       print(f'DOH! Inteigrity Error as\n{sql3IE}')
+       print(f'DOH! Inteigrity Error(populate_Coinhistorytable) as:\n{sql3IE}')
      except sqlite3.OperationalError as sql3err: 
        print(f'DOH! this is the except clause from populteCoinHistTable function \n {sql3err}')
-#tPrice = get_json(f'{baseEP}{tickerpriceEP}')
-#tickerklines = get_qs(f'{baseEP}{candlestickEP}', params={'symbol':'LTCBTC', 'interval':client.KLINE_INTERVAL_1DAY, 'startTime':1642550399999, 'endTime':1643587199999})
-#tickerklines = get_qstring(f'{baseEP}{candlestickEP}', {'symbol':'LTCBTC', 'interval':'1d','startTime':1642550399999, 'endTime':1643587199999})
 
-# Print Request headers
-#print(client.response.headers)
 
-#tickerklines is list of lists
-#print(makedate(tickerklines[0][0]))
-#print(thecoins[0])
-
-# for subdict in thecoins:
-#   print(subdict.get('symbol'), '{:.2f}'.format(float(subdict.get('price'))))
-
-def populateCoinTable(coin):
+def populate_CoinTable(coin):
    try:
     cursor.execute("INSERT INTO coins VALUES (:symbol, :price)", 
       {'symbol': coin.get('symbol'), 'price': coin.get('price')})
@@ -85,9 +75,31 @@ def populateCoinTable(coin):
    finally:
       conn.commit()
 
-[populateCoinTable(x) for x in thecoins]
+def count_coins():
+    '''
+    Quick count of total number symbol names for upper limit of range() 
+    '''
+    mycount = 0 
+    try:
+      mycountq = cursor.execute("""SELECT COUNT(symbol) from coins""")
+    except Exception as err:
+      print(f'This is the except from the countcoins function\n{err}')
+    return mycountq.fetchall()[0][0]
+
+print(thecoins[:3])
+
+
+[populate_CoinTable(x) for x in thecoins]
 sp.call('/bin/sleep 5', shell='true')
-[popultateCoinHistTable(x) for x in thecoins]
+
+# THIS APPEARS TO WORK
+# for subdict in thecoins:
+#     print(subdict.get('symbol'))
+
+for subdict in thecoins:
+  popultate_CoinHistTable(subdict.get('symbol'))
+
+
 # myq = cursor.execute('select * from coins')
 # print(myq.fetchmany(5))
 
