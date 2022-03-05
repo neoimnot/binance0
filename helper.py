@@ -2,6 +2,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime as dtdt
 from binance import Client
+from datetime import datetime as dtdt
 import datetime as dt
 import subprocess as sp
 import requests
@@ -32,19 +33,6 @@ svrtimeEP = f'api/v3/time'
 candlestickEP = f'api/v3/klines'
 tickerpriceEP = f'api/v3/ticker/price'
 
-# Generic Function definitions next
-# def get_json(url, **kwargs):
-#   '''
-#   Helper function to call Binance Endpoints
-#   '''
-#   print(url)
-#   try:
-#     params = {}
-#     r = requests.get(url, params=params, headers=myMBXKEY)
-#   except Exception as err:
-#     print(f'DOH!...looks like we hit an error\n{err}')
-#   return r.json()
-
 def get_qstring(url, myparams):
   '''
   # Helper function to call Binance Endpoints
@@ -56,15 +44,15 @@ def get_qstring(url, myparams):
     print(f'DOH! JSON error:\n{jerr.values}')
   return r.json()
 
-def makeTS(mytime):
+def convert_timestamp(mytime):
   '''
   Binance API returns their timestamps in milliseconds.
   Remove them and convert remainder to datetime.datetime object.
   '''
   mytime = int(mytime/1000)
-  return dt.fromtimestamp(mytime)
+  return dtdt.fromtimestamp(mytime)
 
-def create200TStamps():
+def create_200timestamp():
   '''
   Create two Binance friendly timestamps.  One from now and one from 201 days ago
   Retun as a tuple.

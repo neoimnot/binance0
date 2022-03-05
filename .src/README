@@ -1,0 +1,51 @@
+[TODO]
+[x]  Connect both requests and python-binance to API key
+[x]  SQLite3 database creation and table initization
+[ ]  API call 200 day Coin close results to SQLlite table
+[ ]  SQLlite Stored Proceadure to prune tables to 60 days data
+[ ]  SQLlite query to Pandas Dataframe
+[ ]  DataFrame --> to create 20, 50, 100 day Exponential Weighted Averages
+[ ]  Data processing if last close is below 20, 50, or 100 day EWA.
+[ ]  Email results
+===============================================================================
+# Locate IP for whitelisting until you can figure out a DDNS solution
+wget -qO- http://ipecho.net/plain | xargs echo
+
+This looked good:
+https://python.plainenglish.io/how-to-set-up-and-use-binance-api-with-python-3e33a51210d9
+
+This looked good too:
+https://www.youtube.com/watch?v=4aqx5P2Y38U
+
+[ENDPOINT DOCS]
+-------------------------------------------------------------------------------
+get_klines(**params) → Dict[KT, VT][source]
+Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.
+https://binance-docs.github.io/apidocs/spot/en/#kline-candlestick-data
+Parameters:	
+symbol (str) – required
+interval (str) –
+limit (int) –
+Default 500; max 1000.
+startTime (int) –
+endTime (int) –
+Returns:	
+API response
+[
+    [
+        1499040000000,      # Open time
+        "0.01634790",       # Open
+        "0.80000000",       # High
+        "0.01575800",       # Low
+        "0.01577100",       # Close
+        "148976.11427815",  # Volume
+        1499644799999,      # Close time
+        "2434.19055334",    # Quote asset volume
+        308,                # Number of trades
+        "1756.87402397",    # Taker buy base asset volume
+        "28.46694368",      # Taker buy quote asset volume
+        "17928899.62484339" # Can be ignored
+    ]
+]
+Raises:	BinanceRequestException, BinanceAPIException
+-------------------------------------------------------------------------------

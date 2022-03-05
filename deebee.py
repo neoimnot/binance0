@@ -29,7 +29,7 @@ def mycursor(mydb):
     print(f'DOH! SQL Error\n {e}')
   return mycursor
 
-def createCoinTable(cur):
+def create_cointable(cur):
     '''
     Base coin table pre-population as it has cost data in it.
     Accepts cursor object as a parameter 
@@ -44,7 +44,7 @@ def createCoinTable(cur):
     except sqlite3.OperationalError as e:
         print(f'Coin table creation failed! \n{e}')
 
-def createCointHistTable(cur):
+def create_cointhisttable(cur):
     '''
     Create coin history table with an auto incrementing PK (closeid) and
     coins(symbol) as FK with close, volume, and number of trades.
@@ -54,6 +54,7 @@ def createCointHistTable(cur):
         cur.execute("DROP TABLE if EXISTS coinhist")
         coinhisttable = cur.execute("""CREATE TABLE coinhist (
                         closeid NUMERIC PRIMARY KEY,
+                        closetime int,
                         close real,
                         volume real,
                         coin varchar(10),
@@ -63,22 +64,7 @@ def createCointHistTable(cur):
     except sqlite3.OperationalError as err:
         print(f'Coinhistory table creation failed! \n{err}')
 
-def createCoinTempTable(cur):
-    '''
-    Create coin history table with an auto incrementing PK (closeid) and
-    coins(symbol) as FK with close, volume, and number of trades.
-    Yes, foreign keys have to come last for whatever reason. 
-    '''
-    try:
-        cointemptable = cur.execute("""CREATE TABLE IF NOT EXISTS cointemptable (
-                        closeid NUMERIC PRIMARY KEY,
-                            """)
-    except sqlite3.OperationalError as err:
-        print(f'Coinhistory table creation failed! \n{err}')
-
-
-
-def showTables(cur):
+def show_tables(cur):
     tables = ''
     '''
     Show talbles becuase we're in memory and can't use a table browser
@@ -88,13 +74,3 @@ def showTables(cur):
     except sqlite3.OperationalError as err:
         print(f'Show tables failed! \n{err}')
     return tables
-        
-#     ''' 
-#     Populate Coin table with unique contraint
-#     https://dba.stackexchange.com/questions/189059/how-do-i-insert-record-only-if-the-record-doesnt-exist
-#     insert or ignore into coins (symbol) VALUES ('xxxx')
-#     '''
-#     try:
-#         cursor.execute('INSERT or IGNORE INTO coins VALUES (:mycoin {mycoin: coin}));
-#     except Exception as err:
-#         print(f"DOH.  Table population error \n {err} ")
