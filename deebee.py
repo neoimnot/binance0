@@ -9,6 +9,9 @@ def connectDB():
  # myconn = ''
   try:
     myconn = sqlite3.connect('cryptcoins.db')
+    myconn.execute("PRAGMA foreign_keys = 1")
+    sqlite3.paramstyle = 'named'
+    myconn.commit()
   except Exception as err:
     print('DOH, DB connection error')
   return myconn
@@ -32,8 +35,9 @@ def createCoinTable(cur):
     Accepts cursor object as a parameter 
     '''
     try:
-        cointable = cur.execute("""CREATE TABLE IF NOT EXISTS coins (
-                    symbol text PRIMARY KEY, 
+        cur.execute("DROP TABLE IF EXISTS coins")
+        cointable = cur.execute("""CREATE TABLE coins (
+                    symbol varchar(10) PRIMARY KEY, 
                     price real
                     )
               """)
@@ -47,12 +51,12 @@ def createCointHistTable(cur):
     Yes, foreign keys have to come last for whatever reason. 
     '''
     try:
-        coinhisttable = cur.execute("""CREATE TABLE IF NOT EXISTS coinhist (
+        cur.execute("DROP TABLE if EXISTS coinhist")
+        coinhisttable = cur.execute("""CREATE TABLE coinhist (
                         closeid NUMERIC PRIMARY KEY,
-                        coin text,
                         close real,
                         volume real,
-                        numtrades real,
+                        coin varchar(10),
                         FOREIGN KEY(coin) REFERENCES coins(symbol)          
                         )
                     """)
@@ -71,6 +75,18 @@ def createCoinTempTable(cur):
                             """)
     except sqlite3.OperationalError as err:
         print(f'Coinhistory table creation failed! \n{err}')
+
+def countcoins():
+    '''
+    Quick count of total symbol names for PK use
+    '''
+    try:
+      cur = ''
+      mycount = 0 
+      mycount = cur.execute(""""SELECT COUNT(symbol) from coins""")
+    except Exception as err:
+      print(f'This is the except from the countcoins function\n{err}')
+      return mycount
 
 def showTables(cur):
     tables = ''

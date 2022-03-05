@@ -21,28 +21,36 @@ thecoins = mycoins()
 
 def popultateCoinHistTable(mycoin):
    '''
-   Fetch a tuple of binance ready timestamps 201 days apart.  Then,
+   Fetch a tuple of binance ready timestamps 201 days apart.  Then
    call the API for the symbol passed in for that range.  Update
-   the coinhist table with values
+   the coinhist table with those values.
+   Endpoint 'klines' returns a list, e.g.,
+   [1628899200000, '47836.2900', '48177.5300', '46039.0800', '47100.2900', 
+   '1395.72508200', 1628985599999, '65535889.6275', 49628, '688.88120100', 
+   '32352286.5264', '0']
    '''
-#  Initialze fetch
+#  Initialze fetch and mycount
    fetch = ''
+   coincount = 0 
 #   Set 201 days timeframe
    mytimeRange =  create200TStamps()
+#  How many coins?
+   coincount = countcoins()
 #   Fetch data by coin name.
    try:
      fetch = get_qstring('https://api.binance.us/api/v3/klines',
-         {'symbol': mycoin, 'interval':'1d', 'startTime':mytimeRange[1], 'endTime':mytimeRange[0]}
-         )
+         {'symbol': mycoin, 'interval':'1d', 'startTime':mytimeRange[1], 
+         'endTime':mytimeRange[0]})
    except Exception as err:
      print(f'DOH! This is the except from populateCoinHistTable\n{err}')
    finally:
      try:
         if fetch:
           for sublist in fetch:
-            cursor.execute("INSERT INTO coinhist VALUES (:closeid, :coin, :close, :volume, :numtrades)", 
-              {'closeid': sublist[4], 'coin': mycoin, 'close': sublist[5],
-              'volume': sublist[8], 'numtrades': sublist[4]}
+            for num in range(1, coincount):
+              cursor.execute("INSERT INTO coinhist VALUES (:closeid, :close, :volume, :coin)", 
+                {'closeid': num, 'close': f'{float(sublist[4]):.2f}',
+                 'volume': f'{float(sublist[5]):.2f}','coin': str(mycoin)}
           )
         else:
           print(f'This is the else from the cursor.execute')
@@ -50,7 +58,6 @@ def popultateCoinHistTable(mycoin):
        print(f'DOH! Inteigrity Error as\n{sql3IE}')
      except sqlite3.OperationalError as sql3err: 
        print(f'DOH! this is the except clause from populteCoinHistTable function \n {sql3err}')
-
 #tPrice = get_json(f'{baseEP}{tickerpriceEP}')
 #tickerklines = get_qs(f'{baseEP}{candlestickEP}', params={'symbol':'LTCBTC', 'interval':client.KLINE_INTERVAL_1DAY, 'startTime':1642550399999, 'endTime':1643587199999})
 #tickerklines = get_qstring(f'{baseEP}{candlestickEP}', {'symbol':'LTCBTC', 'interval':'1d','startTime':1642550399999, 'endTime':1643587199999})
@@ -63,7 +70,7 @@ def popultateCoinHistTable(mycoin):
 #print(thecoins[0])
 
 # for subdict in thecoins:
-#    print(subdict.get('symbol'), '{:.2f}'.format(float(subdict.get('price'))))
+#   print(subdict.get('symbol'), '{:.2f}'.format(float(subdict.get('price'))))
 
 def populateCoinTable(coin):
    try:
@@ -79,9 +86,10 @@ def populateCoinTable(coin):
       conn.commit()
 
 [populateCoinTable(x) for x in thecoins]
-
-myq = cursor.execute('select * from coins')
-print(myq.fetchmany(5))
+sp.call('/bin/sleep 5', shell='true')
+[popultateCoinHistTable(x) for x in thecoins]
+# myq = cursor.execute('select * from coins')
+# print(myq.fetchmany(5))
 
 # for subdict in thecoins:
 #   popultateCoinHistTable(str(subdict.get('symbol')))

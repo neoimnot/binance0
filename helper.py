@@ -5,7 +5,6 @@ from binance.client import Client
 import datetime as dt
 import subprocess as sp
 import requests
-import binance
 import smtplib 
 import json
 import ssl
