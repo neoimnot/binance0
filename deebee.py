@@ -44,16 +44,18 @@ def createCointHistTable(cur):
     '''
     Create coin history table with an auto incrementing PK (closeid) and
     coins(symbol) as FK with close, volume, and number of trades.
-    Yes, foreign keys have to come last for whatever reason. 
+    Yes, foreign keys have to come last for whatever reason.
     '''
     try:
         coinhisttable = cur.execute("""CREATE TABLE IF NOT EXISTS coinhist (
-                        closeid NUMERIC PRIMARY KEY,
-                        coin text,
-                        close real,
-                        volume real,
-                        numtrades real,
-                        FOREIGN KEY(coin) REFERENCES coins(symbol)          
+                        open_time INTEGER,
+                        closeid INTEGER,
+                        coin TEXT,
+                        close REAL,
+                        volume REAL,
+                        numtrades INTEGER,
+                        PRIMARY KEY (open_time, coin)
+                        FOREIGN KEY(coin) REFERENCES coins(symbol)
                         )
                     """)
     except sqlite3.OperationalError as err:

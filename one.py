@@ -40,16 +40,17 @@ def popultateCoinHistTable(mycoin):
      try:
         if fetch:
           for sublist in fetch:
-            cursor.execute("INSERT INTO coinhist VALUES (:closeid, :coin, :close, :volume, :numtrades)", 
-              {'closeid': sublist[4], 'coin': mycoin, 'close': sublist[5],
-              'volume': sublist[8], 'numtrades': sublist[4]}
-          )
+            cursor.execute("INSERT INTO coinhist VALUES (:open_time, :closeid, :coin, :close, :volume, :numtrades)",
+              {'open_time': sublist[0], 'closeid': sublist[6], 'coin': mycoin, 'close': sublist[4],
+              'volume': sublist[5], 'numtrades': sublist[8]})
         else:
           print(f'This is the else from the cursor.execute')
      except  sqlite3.IntegrityError as sql3IE:
        print(f'DOH! Inteigrity Error as\n{sql3IE}')
-     except sqlite3.OperationalError as sql3err: 
+     except sqlite3.OperationalError as sql3err:
        print(f'DOH! this is the except clause from populteCoinHistTable function \n {sql3err}')
+     finally:
+       conn.commit()
 
 #tPrice = get_json(f'{baseEP}{tickerpriceEP}')
 #tickerklines = get_qs(f'{baseEP}{candlestickEP}', params={'symbol':'LTCBTC', 'interval':client.KLINE_INTERVAL_1DAY, 'startTime':1642550399999, 'endTime':1643587199999})
@@ -83,12 +84,12 @@ def populateCoinTable(coin):
 myq = cursor.execute('select * from coins')
 print(myq.fetchmany(5))
 
-# for subdict in thecoins:
-#   popultateCoinHistTable(str(subdict.get('symbol')))
-#   print(str(subdict.get('symbol')))
+for subdict in thecoins:
+  popultateCoinHistTable(str(subdict.get('symbol')))
+  print(str(subdict.get('symbol')))
 
-# wtf = popultateCoinHistTable('SUSHIUSDT') 
-# print(f'This is wtf: {wtf}')     
+# wtf = popultateCoinHistTable('SUSHIUSDT')
+# print(f'This is wtf: {wtf}')
 
 #Show table contents
 # myquery = cursor.execute('SELECT * from coins')
